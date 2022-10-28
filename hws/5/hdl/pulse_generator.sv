@@ -10,7 +10,15 @@ input wire [N-1:0] ticks;
 output logic out;
 
 logic [N-1:0] counter;
-logic counter_comparator;
 
+always_comb out = counter === ticks;
+
+always_ff @(posedge clk) begin : pulse_gen_counter
+    if (rst) counter <= 0;
+    else if (ena) begin
+        counter <= counter + 1;
+        if (out) counter <= 0;
+    end
+end
 
 endmodule

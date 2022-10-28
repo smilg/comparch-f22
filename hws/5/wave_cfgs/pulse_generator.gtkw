@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Wed Oct 26 22:38:19 2022
+[*]
+[dumpfile] "/home/jacob/src/comparch-f22/hws/5/pulse_generator.fst"
+[dumpfile_mtime] "Wed Oct 26 22:38:09 2022"
+[dumpfile_size] 952
+[savefile] "/home/jacob/src/comparch-f22/hws/5/wave_cfgs/pulse_generator.gtkw"
+[timestart] 0
+[size] 1908 1047
+[pos] -1 -1
+*-23.940912 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_pulse_generator.
+[sst_width] 214
+[signals_width] 174
+[sst_expanded] 1
+[sst_vpaned_height] 309
+@25
+test_pulse_generator.UUT.clk
+@24
+test_pulse_generator.UUT.ticks[6:0]
+test_pulse_generator.UUT.counter[6:0]
+test_pulse_generator.UUT.out
+@28
+test_pulse_generator.UUT.rst
+test_pulse_generator.UUT.ena
+[pattern_trace] 1
+[pattern_trace] 0
