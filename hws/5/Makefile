@@ -13,11 +13,7 @@ test_comparators: tests/test_comparators.sv hdl/comparator_eq.sv hdl/comparator_
 waves_comparator: test_comparators
 	gtkwave comparators.fst --save=wave_cfgs/comparators.gtkw
 
-<<<<<<< HEAD
-test_pulse_generator: tests/test_pulse_generator.sv hdl/pulse_generator.sv hdl/comparator_eq.sv
-=======
 test_pulse_generator: tests/test_pulse_generator.sv hdl/pulse_generator.sv ${ADDER_SOURCES} hdl/comparator_eq.sv
->>>>>>> 637ee7ff83a00bba001e1f2f64c734343956e53a
 	${IVERILOG} $^ -o test_pulse_generator.bin && ${VVP} test_pulse_generator.bin ${VVP_POST}
 
 waves_pulse_generator: test_pulse_generator
