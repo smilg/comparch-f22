@@ -123,10 +123,24 @@ always_ff @(posedge clk) begin : spi_controller_fsm
         endcase
       end
       S_RXING : begin
-        
-      end
-      S_RX_DONE : begin
-
+        sclk <= ~sclk;
+        if(~sclk) begin // positive edge logic
+            if(bit_counter != 0) begin
+                bit_counter <= bit_counter - 1;
+            end else begin
+                case(spi_mode)
+                    WRITE_8_READ_8  : o_data <= {16'b0, rx_data[7:0]};
+                    WRITE_8_READ_16 : o_data <= {8'b0, rx_data[15:0]};
+                    WRITE_8_READ_24 : o_data <= rx_data;
+                    default         : o_data <= 0;
+                endcase
+                o_valid <= 1;
+                state <= S_IDLE;
+                i_ready <= 1;
+            end
+        end else begin  // negative edge logic
+            rx_data[bit_counter] <= miso;
+        end
       end
       default : state <= S_ERROR;
     endcase
