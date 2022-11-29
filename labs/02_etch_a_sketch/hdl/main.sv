@@ -72,7 +72,7 @@ MMCME2_BASE_inst (
 // Touch signals
 touch_t touch0, touch1;
 
-`define LAB_PART_1 // Uncomment once you start working on the next parts.
+// `define LAB_PART_1 // Uncomment once you start working on the next parts.
 
 /* ------------------------------------------------------------------------- */
 /* -- Part 1 - Intro to Sequential Logic on FPGAs                         -- */
@@ -114,7 +114,7 @@ pwm #(.N(PWM_WIDTH)) PWM_LED1 (
   .out(leds[1])
 );
 
-`define LAB_PART_1
+// `define LAB_PART_1
 always_comb begin: led_pwm_muxes
 `ifdef LAB_PART_1
   // For part 1, use the output of the triangle generators.
@@ -149,7 +149,7 @@ ili9341_display_controller ILI9341(
   .vram_rd_addr(vram_rd_addr),
   .vram_rd_data(vram_rd_data),
   // !!! NOTE - change enable_test_pattern to zero once you start implementing the video ram !!!
-  .enable_test_pattern(1'b1) 
+  .enable_test_pattern(1'b0) 
 );
 
 /* ------------------------------------------------------------------------- */
@@ -182,5 +182,37 @@ block_ram #(.W(VRAM_W), .L(VRAM_L)) VRAM(
   .wr_ena(vram_wr_ena), .wr_addr(vram_wr_addr), .wr_data(vram_wr_data)
 );
 // Add your vram control FSM here:
+/*
+clear memory on button press.
+update memory based on touch values.
+emit draw signals based on memory.
+*/
+
+enum logic {S_MEMCLR, S_DRAW} state;
+
+always_ff @(posedge clk) begin
+    if(rst) begin
+        state <= S_MEMCLR;
+        vram_clear_counter <= VRAM_L-1; // start clearing at the end of the VRAM
+    end else begin
+    case (STATE)
+        S_MEMCLR : begin
+            vram_wr_ena <= 1;
+            vram_wr_addr <= vram_clear_counter; // clear the pixel
+            vram_wr_data <= BLACK;  // using black as the "blank" color
+            vram_clear_counter <= vram_clear_counter - 1;   // move to the next pixel
+            if (~|vram_clear_counter) begin // counter is 0, return to draw state
+                vram_wr_ena <= 0;
+                state <= S_DRAW;
+            end
+        end
+        S_DRAW : begin
+            vram_wr_ena <= touch0.valid;    // draw only if valid touch
+            vram_wr_addr <= touch0.y*DISPLAY_WIDTH + {8'd0, touch0.x};  // write at the x,y of the touch
+            vram_wr_data <= PURPLE;
+        end
+    endcase
+    end
+end
 
 endmodule
