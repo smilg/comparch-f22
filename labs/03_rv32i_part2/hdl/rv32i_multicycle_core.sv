@@ -153,15 +153,20 @@ logic [31:0] extended_immediate;
 enum logic [1:0] {IMM_SRC_ITYPE, IMM_SRC_STYPE, IMM_SRC_BTYPE, IMM_SRC_JTYPE} imm_src;
 always_comb begin : extended_immediate_mux
     case(op)
-        OP_ITYPE : imm_src = IMM_SRC_ITYPE;
+        OP_ITYPE, OP_JALR : imm_src = IMM_SRC_ITYPE;
         OP_STYPE : imm_src = IMM_SRC_STYPE;
         OP_BTYPE : imm_src = IMM_SRC_BTYPE;
-        OP_JAL, OP_JALR : imm_src = IMM_SRC_JTYPE;
+        OP_JAL : imm_src = IMM_SRC_JTYPE;
         default : imm_src = IMM_SRC_ITYPE;  // doesn't actually matter what goes here
     endcase
 
     case (imm_src)
-        IMM_SRC_ITYPE /*2'b00*/ : extended_immediate = {{20{IR[31]}}, IR[31:20]};
+        IMM_SRC_ITYPE /*2'b00*/ : begin
+            case (funct3)
+                FUNCT3_SHIFT_RIGHT : extended_immediate = {27'b0, IR[24:20]};
+                default : extended_immediate = {{20{IR[31]}}, IR[31:20]};
+            endcase
+        end
         IMM_SRC_STYPE /*2'b01*/ : extended_immediate = {{20{IR[31]}}, IR[31:25], IR[11:7]};
         IMM_SRC_BTYPE /*2'b10*/ : extended_immediate = {{20{IR[31]}}, IR[7], IR[30:25], IR[11:8], 1'b0};
         IMM_SRC_JTYPE /*2'b11*/ : extended_immediate = {{12{IR[31]}}, IR[19:12], IR[20], IR[30:21], 1'b0};
@@ -389,7 +394,7 @@ always_comb begin : state_comb
             result_source = ALU_REG_OUT;
         end
         S_JALR : begin
-            PC_ena = 1;
+            PC_ena = 0;
             mem_wr_ena = 0;
             IR_ena = 0;
             mem_data_ena = 0;
