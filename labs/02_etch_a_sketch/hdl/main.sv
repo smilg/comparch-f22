@@ -195,7 +195,7 @@ always_ff @(posedge clk) begin
         state <= S_MEMCLR;
         vram_clear_counter <= VRAM_L-1; // start clearing at the end of the VRAM
     end else begin
-    case (STATE)
+    case (state)
         S_MEMCLR : begin
             vram_wr_ena <= 1;
             vram_wr_addr <= vram_clear_counter; // clear the pixel
